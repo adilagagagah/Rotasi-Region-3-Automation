@@ -19,10 +19,21 @@ list_kota = sorted(list(set(df["KOTA"])))
 kota = list_kota[0] # KAB. BANDUNG
 
 min_dos_df = df[(df['PT'] == pt) & (df['KOTA'] == kota) & (df['DOS 30 days'] <= 15)]
-min_dos_df = min_dos_df.sort_values(by='DOS 30 days', ascending=True)
+min_dos_df = min_dos_df.sort_values(by=['DOS 30 days', 'Sales 30 days'], ascending=[True, False])
 
-min_dos_code = list(min_dos_df['SITE CODE'])
-# min_dos_store = list(min_dos_df['STORE NAME'])[0] + f" ({code})"
-min_dos_product = list(min_dos_df['Article code no color'])
 
-print(min_dos_df)
+min_dos_code_unique = min_dos_df['SITE CODE'].drop_duplicates().tolist()
+
+code = min_dos_code_unique[0]
+min_dos_df = min_dos_df[(min_dos_df['SITE CODE'] == code)]
+
+min_dos_article = list(set(min_dos_df['Article code no color']))
+
+rotation_df = df[
+    (df['KOTA'] == kota) &
+    (df['DOS 30 days'] >= 45) 
+    # (df['Article code no color'].isin(min_dos_article))
+]
+
+# print(len(min_dos_article))
+print(rotation_df)
