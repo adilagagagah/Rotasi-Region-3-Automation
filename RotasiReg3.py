@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from datetime import datetime
 
@@ -10,10 +11,18 @@ df_master = pd.read_excel(master_path, sheet_name="REGION 3", header=1)
 df_master_selected = df_master[['SITE CODE', 'PT']]
 df = pd.merge(df_origin, df_master_selected, on='SITE CODE', how='left')
 df = df[["AREA", "KOTA", "TSH", "SITE CODE", "PT", "STORE NAME", "Article code no color", "Stock","Sales 30 days", "DOS 30 days"]]
+df[['Sales 30 days', 'DOS 30 days']] = df[['Sales 30 days', 'DOS 30 days']].map(lambda x: np.nan if x < 0 else x)
 
 # era
-list_kota = list(set(df["KOTA"]))
-# print(len(kota))
+pt = 'EAR'
+list_kota = sorted(list(set(df["KOTA"])))
+kota = list_kota[0] # KAB. BANDUNG
 
+min_dos_df = df[(df['PT'] == pt) & (df['KOTA'] == kota) & (df['DOS 30 days'] <= 15)]
+min_dos_df = min_dos_df.sort_values(by='DOS 30 days', ascending=True)
 
-#print(df)
+min_dos_code = list(min_dos_df['SITE CODE'])
+# min_dos_store = list(min_dos_df['STORE NAME'])[0] + f" ({code})"
+min_dos_product = list(min_dos_df['Article code no color'])
+
+print(min_dos_df)
