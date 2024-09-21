@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import re
 
 file_name = "Data Stock 20 Sep 2024.xlsx"
 file_path = f"../ROTASI REGION 3/{file_name}"
@@ -62,7 +63,7 @@ for code in min_dos_code_unique:
 
             if stock_sales_diff > 0:
                 # Only allow rotation based on stock-sales difference
-                result_rows.append([min_dos_store, rotation_store, article, min_stock, min_sales, min_dos,
+                result_rows.append([kota, min_dos_store, rotation_store, article, min_stock, min_sales, min_dos,
                                     rotation_stock, rotation_sales, rotation_dos])
 
                 # Decrease the stock-sales difference for subsequent rotations
@@ -78,10 +79,23 @@ result_df = pd.DataFrame(result_rows, columns=[
     'STOCK ROTASI', 'SALES ROTASI', 'DOS ROTASI'
 ])
 
+# Remove duplicate articles
 result_df = result_df.drop_duplicates(subset=['ARTICLE'], keep='first')
 
-# Sort based on STORE ASAL, ROTASI DARI, and ARTICLE
-result_df_sorted = result_df.sort_values(by=['STORE ASAL', 'ROTASI DARI', 'ARTICLE'])
+# Function to extract numeric code from store name (e.g., extract 123 from "ERAFONE TAMAN KOPO (E123)")
+def extract_code(store_name):
+    match = re.search(r'\((\w+)\)', store_name)
+    return match.group(1) if match else ''
+
+# Apply the extraction function to both 'STORE ASAL' and 'ROTASI DARI'
+result_df['CODE STORE ASAL'] = result_df['STORE ASAL'].apply(extract_code)
+result_df['CODE ROTASI DARI'] = result_df['ROTASI DARI'].apply(extract_code)
+
+# Sort based on extracted codes (numeric/alphanumeric sorting)
+result_df_sorted = result_df.sort_values(by=['CODE STORE ASAL', 'CODE ROTASI DARI', 'ARTICLE'])
+
+# Drop the helper columns for codes after sorting
+result_df_sorted = result_df_sorted.drop(columns=['CODE STORE ASAL', 'CODE ROTASI DARI'])
 
 # Insert blank rows between different STORE ASAL and ROTASI DARI combinations
 combined_rows = []
@@ -109,11 +123,11 @@ for idx, row in result_df_sorted.iterrows():
 final_df = pd.DataFrame(combined_rows, columns=result_df_sorted.columns)
 
 # Save both sheets to an Excel file
-with pd.ExcelWriter("Result_Stock_Rotation_sorted_with_blanks.xlsx") as writer:
+with pd.ExcelWriter("Result_Stock_Rotation_sorted_by_code_no_duplicates.xlsx") as writer:
     # Original data
     result_df.to_excel(writer, sheet_name="Original Rotasi", index=False)
     
     # Sorted data by store asal and rotasi dari with blank rows
-    final_df.to_excel(writer, sheet_name="Sorted Rotasi", index=False)
+    final_df.to_excel(writer, sheet_name="Sorted Rotasi by Code", index=False)
 
-print("DataFrame telah disimpan ke file dengan sheet baru berisi data yang diurutkan dan jeda baris kosong antar rotasi.")
+print("DataFrame telah disimpan ke file dengan sheet baru berisi data yang diurutkan dan duplikasi artikel telah dihapus.")
