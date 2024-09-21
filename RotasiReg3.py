@@ -29,46 +29,47 @@ min_dos_df = min_dos_df.sort_values(by=['DOS 30 days', 'Sales 30 days'], ascendi
 
 min_dos_code_unique = min_dos_df['SITE CODE'].drop_duplicates().tolist()
 
-code = min_dos_code_unique[0] #E851
-min_dos_df = min_dos_df[(min_dos_df['SITE CODE'] == code)]
+for code in min_dos_code_unique:
+    # code = min_dos_code_unique[0] #E851
+    min_dos_code_df = min_dos_df[(min_dos_df['SITE CODE'] == code)]
 
-min_dos_store = list(min_dos_df['STORE NAME'])[0] + f" ({code})"
-min_dos_article = min_dos_df['Article code no color'].drop_duplicates().tolist()
+    min_dos_store = list(min_dos_code_df['STORE NAME'])[0] + f" ({code})"
+    min_dos_article = min_dos_code_df['Article code no color'].drop_duplicates().tolist()
 
-rotation_df = df[
-    (df['KOTA'] == kota) &
-    (df['DOS 30 days'] >= 45) &
-    (df['Article code no color'].isin(min_dos_article))
-]
+    rotation_df = df[
+        (df['KOTA'] == kota) &
+        (df['DOS 30 days'] >= 45) &
+        (df['Article code no color'].isin(min_dos_article))
+    ]
 
-for article in min_dos_article:
-    min_dos_article_data = min_dos_df[min_dos_df['Article code no color'] == article]
+    for article in min_dos_article:
+        min_dos_article_data = min_dos_df[min_dos_df['Article code no color'] == article]
 
-    min_stock = min_dos_article_data['Stock'].values[0]
-    min_sales = min_dos_article_data['Sales 30 days'].values[0]
-    min_dos = min_dos_article_data['DOS 30 days'].values[0]
+        min_stock = min_dos_article_data['Stock'].values[0]
+        min_sales = min_dos_article_data['Sales 30 days'].values[0]
+        min_dos = min_dos_article_data['DOS 30 days'].values[0]
 
-    # Data dari rotation_df untuk produk yang cocok
-    rotation_article_data = rotation_df[rotation_df['Article code no color'] == article]
-    rotation_article_data = rotation_article_data.sort_values(by=['DOS 30 days', 'Stock'], ascending=[False, False])
-
-    for index, row in rotation_article_data.iterrows():
-        # Ambil data rotation untuk setiap toko yang cocok
-        rotation_store = row['STORE NAME'] + " (" + row['SITE CODE'] + " )"
-        rotation_stock = row['Stock']
-        rotation_sales = row['Sales 30 days']
-        rotation_dos = row['DOS 30 days']
-
-        # Menambahkan ke list hasil
-        result_rows.append([
-            min_dos_store, article, min_stock, min_sales, min_dos,
-            rotation_store, rotation_stock, rotation_sales, rotation_dos
-        ])
-
-        result_df = pd.DataFrame(result_rows, columns=[
-            'STORE NAME', 'BRAND TYPE', 'STOCK', 'SALES', 'DOS',
-            'ROTASI DARI', 'STOCK', 'SALES', 'DOS'
-        ])
+        # Data dari rotation_df untuk produk yang cocok
+        rotation_article_data = rotation_df[rotation_df['Article code no color'] == article]
+        rotation_article_data = rotation_article_data.sort_values(by=['DOS 30 days', 'Stock'], ascending=[False, False])
+    
+        for index, row in rotation_article_data.iterrows():
+            # Ambil data rotation untuk setiap toko yang cocok
+            rotation_store = row['STORE NAME'] + " (" + row['SITE CODE'] + ")"
+            rotation_stock = row['Stock']
+            rotation_sales = row['Sales 30 days']
+            rotation_dos = row['DOS 30 days']
+    
+            # Menambahkan ke list hasil
+            result_rows.append([
+                min_dos_store, article, min_stock, min_sales, min_dos,
+                rotation_store, rotation_stock, rotation_sales, rotation_dos
+            ])
+    
+            result_df = pd.DataFrame(result_rows, columns=[
+                'STORE NAME', 'BRAND TYPE', 'STOCK', 'SALES', 'DOS',
+                'ROTASI DARI', 'STOCK', 'SALES', 'DOS'
+            ])
 
 result_df = result_df.drop_duplicates(subset=['BRAND TYPE'], keep='first')
 output_file = "Result_Stock_Rotation.xlsx"
