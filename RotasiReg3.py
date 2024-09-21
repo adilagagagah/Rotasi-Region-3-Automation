@@ -76,8 +76,8 @@ for code in min_dos_code_unique:
 
 # Save results to DataFrame
 result_df = pd.DataFrame(result_rows, columns=[
-    'STORE NAME', 'BRAND TYPE', 'STOCK (low)', 'SALES (low)', 'DOS (low)',
-    'ROTASI DARI', 'STOCK (high)', 'SALES (high)', 'DOS (high)'
+    'STORE ASAL', 'ARTICLE', 'STOCK ASAL', 'SALES ASAL', 'DOS ASAL',
+    'ROTASI DARI', 'STOCK ROTASI', 'SALES ROTASI', 'DOS ROTASI'
 ])
 
 # Remove duplicates based on BRAND TYPE
