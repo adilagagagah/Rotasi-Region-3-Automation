@@ -17,7 +17,7 @@ df = pd.merge(df_origin, df_master_selected, on='SITE CODE', how='left')
 df = df[["AREA", "KOTA", "TSH", "SITE CODE", "PT", "STORE NAME", "Article code no color", "Stock", "Sales 30 days", "DOS 30 days"]]
 
 # Replace negative values in 'Sales' and 'DOS' columns with NaN
-df[['Sales 30 days', 'DOS 30 days']] = df[['Sales 30 days','DOS 30 days']].applymap(lambda x: np.nan if x < 0 else x)
+df[['Sales 30 days', 'DOS 30 days']] = df[['Sales 30 days','DOS 30 days']].map(lambda x: np.nan if x < 0 else x)
 
 result_rows = []
 
