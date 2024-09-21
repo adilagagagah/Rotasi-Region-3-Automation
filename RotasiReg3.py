@@ -12,7 +12,7 @@ df = pd.merge(df_origin, df_master_selected, on='SITE CODE', how='left')
 
 # Filter kolom relevan dan ganti nilai negatif dengan NaN
 df = df[["AREA", "KOTA", "TSH", "SITE CODE", "PT", "STORE NAME", "Article code no color", "Stock", "Sales 30 days", "DOS 30 days"]]
-df[['Sales 30 days', 'DOS 30 days']] = df[['Sales 30 days','DOS 30 days']].applymap(lambda x: np.nan if x < 0 else x)
+df[['Sales 30 days', 'DOS 30 days']] = df[['Sales 30 days','DOS 30 days']].map(lambda x: np.nan if x < 0 else x)
 
 # Inisialisasi variabel
 result_rows = []
