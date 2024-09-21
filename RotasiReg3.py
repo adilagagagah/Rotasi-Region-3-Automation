@@ -81,7 +81,7 @@ result_df = pd.DataFrame(result_rows, columns=[
 ])
 
 # Remove duplicates based on BRAND TYPE
-result_df = result_df.drop_duplicates(subset=['BRAND TYPE'], keep='first')
+result_df = result_df.drop_duplicates(subset=['ARTICLE'], keep='first')
 
 # Save result to Excel
 output_file = "Result_Stock_Rotation_with_conditions.xlsx"
