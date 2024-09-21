@@ -62,10 +62,8 @@ for code in min_dos_code_unique:
 
             if stock_sales_diff > 0:
                 # Only allow rotation based on stock-sales difference
-                result_rows.append([
-                    min_dos_store, article, min_stock, min_sales, min_dos,
-                    rotation_store, rotation_stock, rotation_sales, rotation_dos
-                ])
+                result_rows.append([min_dos_store, rotation_store, article, min_stock, min_sales, min_dos,
+                                    rotation_stock, rotation_sales, rotation_dos])
 
                 # Decrease the stock-sales difference for subsequent rotations
                 stock_sales_diff -= 1
@@ -74,17 +72,48 @@ for code in min_dos_code_unique:
             if stock_sales_diff <= 0:
                 break
 
-# Save results to DataFrame
+# Save results to DataFrame with new column order
 result_df = pd.DataFrame(result_rows, columns=[
-    'STORE ASAL', 'ARTICLE', 'STOCK ASAL', 'SALES ASAL', 'DOS ASAL',
-    'ROTASI DARI', 'STOCK ROTASI', 'SALES ROTASI', 'DOS ROTASI'
+    'STORE ASAL', 'ROTASI DARI', 'ARTICLE', 'STOCK ASAL', 'SALES ASAL', 'DOS ASAL',
+    'STOCK ROTASI', 'SALES ROTASI', 'DOS ROTASI'
 ])
 
-# Remove duplicates based on BRAND TYPE
 result_df = result_df.drop_duplicates(subset=['ARTICLE'], keep='first')
 
-# Save result to Excel
-output_file = "Result_Stock_Rotation_with_conditions.xlsx"
-result_df.to_excel(output_file, index=False)
+# Sort based on STORE ASAL, ROTASI DARI, and ARTICLE
+result_df_sorted = result_df.sort_values(by=['STORE ASAL', 'ROTASI DARI', 'ARTICLE'])
 
-print(f"DataFrame telah disimpan ke file {output_file}")
+# Insert blank rows between different STORE ASAL and ROTASI DARI combinations
+combined_rows = []
+previous_store_asal = None
+previous_rotasi_dari = None
+
+for idx, row in result_df_sorted.iterrows():
+    current_store_asal = row['STORE ASAL']
+    current_rotasi_dari = row['ROTASI DARI']
+    
+    # Check if the STORE ASAL or ROTASI DARI has changed
+    if current_store_asal != previous_store_asal or current_rotasi_dari != previous_rotasi_dari:
+        # Append a blank row for separation
+        if previous_store_asal is not None:
+            combined_rows.append([''] * len(row))
+    
+    # Append the current row
+    combined_rows.append(row.tolist())
+    
+    # Update previous values
+    previous_store_asal = current_store_asal
+    previous_rotasi_dari = current_rotasi_dari
+
+# Convert combined_rows to DataFrame
+final_df = pd.DataFrame(combined_rows, columns=result_df_sorted.columns)
+
+# Save both sheets to an Excel file
+with pd.ExcelWriter("Result_Stock_Rotation_sorted_with_blanks.xlsx") as writer:
+    # Original data
+    result_df.to_excel(writer, sheet_name="Original Rotasi", index=False)
+    
+    # Sorted data by store asal and rotasi dari with blank rows
+    final_df.to_excel(writer, sheet_name="Sorted Rotasi", index=False)
+
+print("DataFrame telah disimpan ke file dengan sheet baru berisi data yang diurutkan dan jeda baris kosong antar rotasi.")
