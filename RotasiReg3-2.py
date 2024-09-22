@@ -51,8 +51,9 @@ for code in min_dos_code_unique:
         rotation_article_data = rotation_df[rotation_df['Article code no color'] == article]
         rotation_article_data = rotation_article_data.sort_values(by=['DOS 30 days', 'Stock'], ascending=[False, False])
 
-        if not rotation_article_data.empty:
-            first_row = rotation_article_data.iloc[0]
+        for _,first_row in rotation_article_data.iterrows():
+        # if not rotation_article_data.empty:
+        #     first_row = rotation_article_data.iloc[0]
 
             rotation_store = first_row['STORE NAME'] + f" ({first_row['SITE CODE']})"
             rotation_stock = first_row['Stock']
@@ -72,6 +73,37 @@ result_df = pd.DataFrame(result_rows, columns=[
     'STORE ASAL', 'ARTICLE', 'STOCK ASAL', 'SALES ASAL', 'DOS ASAL',
     'STORE ROTASI', 'STOCK ROTASI', 'SALES ROTASI', 'DOS ROTASI'
 ])
+
+# Fungsi untuk proses sorting dan pairing untuk setiap artikel
+def process_article(dataframe, article):
+    df_article = dataframe[dataframe['ARTICLE'] == article]
+    sorted_asal = df_article.sort_values(by=['DOS ASAL', 'SALES ASAL'], ascending=[True, False]).drop_duplicates('STORE ASAL')
+    sorted_rotasi = df_article.sort_values(by=['DOS ROTASI', 'STOCK ROTASI'], ascending=[False, False]).drop_duplicates('STORE ROTASI')
+    sorted_asal.reset_index(drop=True, inplace=True)
+    sorted_rotasi.reset_index(drop=True, inplace=True)
+    result = pd.DataFrame({
+        "STORE ASAL": sorted_asal['STORE ASAL'],
+        "ARTICLE": sorted_asal['ARTICLE'],
+        "STOCK ASAL": sorted_asal['STOCK ASAL'],
+        "SALES ASAL": sorted_asal['SALES ASAL'],
+        "DOS ASAL": sorted_asal['DOS ASAL'],
+        "STORE ROTASI": sorted_rotasi['STORE ROTASI'],
+        "STOCK ROTASI": sorted_rotasi['STOCK ROTASI'],
+        "SALES ROTASI": sorted_rotasi['SALES ROTASI'],
+        "DOS ROTASI": sorted_rotasi['DOS ROTASI']
+    })
+    return result
+
+# List of articles to process
+articles = result_df['ARTICLE'].unique()
+
+# Applying the function to each article
+result_df = pd.concat([process_article(result_df, article) for article in articles])
+
+# Menghapus baris dengan nilai NaN (jika ada)
+result_df.dropna(inplace=True)
+result_df.sort_values(by=['ARTICLE'], ascending=[True])
+result_df.reset_index(drop=True, inplace=True)
 
 output_file = "result.xlsx"
 result_df.to_excel(output_file, index=False)
