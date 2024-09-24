@@ -91,10 +91,7 @@ for kota in list_kota:
         })
         return result
 
-    # List of articles to process
     articles = result_df['ARTICLE'].unique()
-
-    # Applying the function to each article
     if not result_df.empty:
         result_df = pd.concat([process_article(result_df, article) for article in articles])
 
