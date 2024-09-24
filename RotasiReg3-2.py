@@ -66,24 +66,24 @@ for kota in list_kota:
 
 
     result_df = pd.DataFrame(result_rows, columns=[
-        'KOTA', 'STORE ASAL', 'ARTICLE', 'STOCK ASAL', 'SALES ASAL', 'DOS ASAL',
+        'KOTA', 'STORE TUJUAN', 'ARTICLE', 'STOCK TUJUAN', 'SALES TUJUAN', 'DOS TUJUAN',
         'STORE ROTASI', 'STOCK ROTASI', 'SALES ROTASI', 'DOS ROTASI'
     ])
 
     # Fungsi untuk proses sorting dan pairing untuk setiap artikel
     def process_article(dataframe, article):
         df_article = dataframe[dataframe['ARTICLE'] == article]
-        sorted_asal = df_article.sort_values(by=['DOS ASAL', 'SALES ASAL'], ascending=[True, False]).drop_duplicates('STORE ASAL')
+        sorted_asal = df_article.sort_values(by=['DOS TUJUAN', 'SALES TUJUAN'], ascending=[True, False]).drop_duplicates('STORE TUJUAN')
         sorted_rotasi = df_article.sort_values(by=['DOS ROTASI', 'STOCK ROTASI'], ascending=[False, False]).drop_duplicates('STORE ROTASI')
         sorted_asal.reset_index(drop=True, inplace=True)
         sorted_rotasi.reset_index(drop=True, inplace=True)
         result = pd.DataFrame({
             "KOTA": sorted_asal['KOTA'],
-            "STORE ASAL": sorted_asal['STORE ASAL'],
+            "STORE TUJUAN": sorted_asal['STORE TUJUAN'],
             "ARTICLE": sorted_asal['ARTICLE'],
-            "STOCK ASAL": sorted_asal['STOCK ASAL'],
-            "SALES ASAL": sorted_asal['SALES ASAL'],
-            "DOS ASAL": sorted_asal['DOS ASAL'],
+            "STOCK TUJUAN": sorted_asal['STOCK TUJUAN'],
+            "SALES TUJUAN": sorted_asal['SALES TUJUAN'],
+            "DOS TUJUAN": sorted_asal['DOS TUJUAN'],
             "STORE ROTASI": sorted_rotasi['STORE ROTASI'],
             "STOCK ROTASI": sorted_rotasi['STOCK ROTASI'],
             "SALES ROTASI": sorted_rotasi['SALES ROTASI'],
@@ -97,14 +97,14 @@ for kota in list_kota:
 
     # Menghapus baris dengan nilai NaN (jika ada)
     result_df.dropna(inplace=True)
-    result_df.sort_values(by=['ARTICLE'], ascending=[True])
     result_df.reset_index(drop=True, inplace=True)
 
     ear_df.append(result_df)
 
 result_df = pd.concat(ear_df, ignore_index=True)
+result_df = result_df.sort_values(by=['KOTA', 'STORE TUJUAN', 'ARTICLE'], ascending=[True, True, True])
 
-output_file = "result.xlsx"
+output_file = "Rotasi EAR.xlsx"
 result_df.to_excel(output_file, index=False)
 
-print(result_df)
+print(result_df.columns)
