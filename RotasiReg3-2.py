@@ -14,10 +14,9 @@ df[['Sales 30 days', 'DOS 30 days']] = df[['Sales 30 days','DOS 30 days']].map(l
 ear_df = []
 
 pt = 'EAR'
-list_kota = sorted(list(set(df["KOTA"])))
+list_kota = sorted(df["KOTA"].unique())
 
 for kota in list_kota:
-    # kota = list_kota[2]  # KAB. BANDUNG
     result_rows = []
 
     min_dos_df = df[
@@ -27,10 +26,9 @@ for kota in list_kota:
     ]
 
     min_dos_df = min_dos_df.sort_values(by=['DOS 30 days', 'Sales 30 days'], ascending=[True, False])
-    min_dos_code_unique = min_dos_df['SITE CODE'].drop_duplicates().tolist()
+    min_dos_code_unique = min_dos_df['SITE CODE'].unique()
 
     for code in min_dos_code_unique:
-        #code = min_dos_code_unique[0] #E851
         min_dos_code_df = min_dos_df[(min_dos_df['SITE CODE'] == code)]
 
         min_dos_code_store = list(min_dos_code_df['STORE NAME'])[0] + f" ({code})"
@@ -46,24 +44,19 @@ for kota in list_kota:
         for article in min_dos_code_article:
             min_dos_article_data = min_dos_code_df[min_dos_code_df['Article code no color'] == article]
 
-            min_stock = min_dos_article_data['Stock'].values[0]
-            min_sales = min_dos_article_data['Sales 30 days'].values[0]
-            min_dos = min_dos_article_data['DOS 30 days'].values[0]
+            min_stock, min_sales, min_dos = min_dos_article_data[['Stock', 'Sales 30 days', 'DOS 30 days']].values[0]
 
             # Data dari rotation_df untuk produk yang cocok
             rotation_article_data = rotation_df[rotation_df['Article code no color'] == article]
             rotation_article_data = rotation_article_data.sort_values(by=['DOS 30 days', 'Stock'], ascending=[False, False])
 
             for _,first_row in rotation_article_data.iterrows():
-            # if not rotation_article_data.empty:
-            #     first_row = rotation_article_data.iloc[0]
 
                 rotation_store = first_row['STORE NAME'] + f" ({first_row['SITE CODE']})"
                 rotation_stock = first_row['Stock']
                 rotation_sales = first_row['Sales 30 days']
                 rotation_dos = first_row['DOS 30 days']
 
-                # Menambahkan ke list hasil
                 result_rows.append([
                     kota, min_dos_code_store, article, min_stock, min_sales, min_dos,
                     rotation_store, rotation_stock, rotation_sales, rotation_dos
