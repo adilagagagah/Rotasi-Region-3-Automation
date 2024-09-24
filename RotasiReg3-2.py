@@ -15,7 +15,7 @@ result_rows = []
 
 pt = 'EAR'
 list_kota = sorted(list(set(df["KOTA"])))
-kota = list_kota[0]  # KAB. BANDUNG
+kota = list_kota[2]  # KAB. BANDUNG
 
 min_dos_df = df[
     (df['PT'] == pt) & 
@@ -62,7 +62,7 @@ for code in min_dos_code_unique:
 
             # Menambahkan ke list hasil
             result_rows.append([
-                min_dos_code_store, article, min_stock, min_sales, min_dos,
+                kota, min_dos_code_store, article, min_stock, min_sales, min_dos,
                 rotation_store, rotation_stock, rotation_sales, rotation_dos
             ])
 
@@ -70,7 +70,7 @@ for code in min_dos_code_unique:
 
 
 result_df = pd.DataFrame(result_rows, columns=[
-    'STORE ASAL', 'ARTICLE', 'STOCK ASAL', 'SALES ASAL', 'DOS ASAL',
+    'KOTA', 'STORE ASAL', 'ARTICLE', 'STOCK ASAL', 'SALES ASAL', 'DOS ASAL',
     'STORE ROTASI', 'STOCK ROTASI', 'SALES ROTASI', 'DOS ROTASI'
 ])
 
@@ -82,6 +82,7 @@ def process_article(dataframe, article):
     sorted_asal.reset_index(drop=True, inplace=True)
     sorted_rotasi.reset_index(drop=True, inplace=True)
     result = pd.DataFrame({
+        "KOTA": sorted_asal['KOTA'],
         "STORE ASAL": sorted_asal['STORE ASAL'],
         "ARTICLE": sorted_asal['ARTICLE'],
         "STOCK ASAL": sorted_asal['STOCK ASAL'],
@@ -98,7 +99,8 @@ def process_article(dataframe, article):
 articles = result_df['ARTICLE'].unique()
 
 # Applying the function to each article
-result_df = pd.concat([process_article(result_df, article) for article in articles])
+if not result_df.empty:
+    result_df = pd.concat([process_article(result_df, article) for article in articles])
 
 # Menghapus baris dengan nilai NaN (jika ada)
 result_df.dropna(inplace=True)
