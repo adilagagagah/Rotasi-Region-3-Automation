@@ -199,7 +199,7 @@ filtered_nasa_df = [df.dropna(how='all', axis=1) for df in nasa_df_2]
 result_df_2 = pd.concat(filtered_nasa_df, ignore_index=True)
 result_df_2 = result_df_2.sort_values(by=['KOTA', 'STORE TUJUAN', 'ARTICLE'], ascending=[True, True, True])
 
-output_file = "rotasi NASA - 2.xlsx"
+output_file = "rotasi NASA.xlsx"
 with pd.ExcelWriter(output_file) as writer:
     result_df.to_excel(writer, sheet_name='ByTSH', index=False)
     result_df_2.to_excel(writer, sheet_name='ByKOTA', index=False)
