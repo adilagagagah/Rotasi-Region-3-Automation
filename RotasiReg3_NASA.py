@@ -11,10 +11,10 @@ df_master_selected = df_master[['SITE CODE', 'PT']]
 df = pd.merge(df_origin, df_master_selected, on='SITE CODE', how='left')
 df = df[["KOTA", "TSH", "SITE CODE", "PT", "STORE NAME","Article code no color", "Stock", "Sales 30 days", "DOS 30 days"]]
 df[['Sales 30 days', 'DOS 30 days']] = df[['Sales 30 days','DOS 30 days']].map(lambda x: np.nan if x < 0 else x)
-dcm_df = []
-dcm_df_2 = []
+nasa_df = []
+nasa_df_df_2 = []
 
-pt = 'DCM'
+pt = 'NASA'
 df = df[df['PT'] == pt]
 list_tsh = sorted(df["TSH"].unique())
 
@@ -104,10 +104,10 @@ for tsh in list_tsh:
     result_df.dropna(inplace=True)
     result_df.reset_index(drop=True, inplace=True)
 
-    dcm_df.append(result_df)
+    nasa_df.append(result_df)
 
-filtered_dcm_df = [df.dropna(how='all', axis=1) for df in dcm_df] 
-result_df = pd.concat(filtered_dcm_df, ignore_index=True)
+filtered_nasa_df = [df.dropna(how='all', axis=1) for df in nasa_df] 
+result_df = pd.concat(filtered_nasa_df, ignore_index=True)
 result_df = result_df.sort_values(by=['TSH', 'STORE TUJUAN', 'ARTICLE'], ascending=[True, True, True])
 
 ##################
@@ -193,13 +193,13 @@ for kota in list_kota:
     result_df_2.dropna(inplace=True)
     result_df_2.reset_index(drop=True, inplace=True)
 
-    dcm_df_2.append(result_df_2)
+    nasa_df_2.append(result_df_2)
 
-filtered_dcm_df = [df.dropna(how='all', axis=1) for df in dcm_df_2] 
-result_df_2 = pd.concat(filtered_dcm_df, ignore_index=True)
+filtered_nasa_df = [df.dropna(how='all', axis=1) for df in nasa_df_2] 
+result_df_2 = pd.concat(filtered_nasa_df, ignore_index=True)
 result_df_2 = result_df_2.sort_values(by=['KOTA', 'STORE TUJUAN', 'ARTICLE'], ascending=[True, True, True])
 
-output_file = "rotasi DCM.xlsx"
+output_file = "rotasi NASA - 2.xlsx"
 with pd.ExcelWriter(output_file) as writer:
     result_df.to_excel(writer, sheet_name='ByTSH', index=False)
     result_df_2.to_excel(writer, sheet_name='ByKOTA', index=False)
