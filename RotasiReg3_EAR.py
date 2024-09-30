@@ -109,7 +109,7 @@ ear_df = [df.dropna(how='all', axis=1) for df in ear_df]
 result_df = pd.concat(ear_df, ignore_index=True)
 result_df = result_df.sort_values(by=['KOTA', 'STORE TUJUAN', 'ARTICLE'], ascending=[True, True, True])
 
-output_file = "Rotasi EAR-1.xlsx"
+output_file = "Rotasi EAR.xlsx"
 result_df.to_excel(output_file, index=False)
 
 # print(result_df.columns)
