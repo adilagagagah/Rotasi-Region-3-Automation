@@ -12,7 +12,7 @@ df = pd.merge(df_origin, df_master_selected, on='SITE CODE', how='left')
 df = df[["KOTA", "TSH", "SITE CODE", "PT", "STORE NAME","Article code no color", "Stock", "Sales 30 days", "DOS 30 days"]]
 df[['Sales 30 days', 'DOS 30 days']] = df[['Sales 30 days','DOS 30 days']].map(lambda x: np.nan if x < 0 else x)
 nasa_df = []
-nasa_df_df_2 = []
+nasa_df_2 = []
 
 pt = 'NASA'
 df = df[df['PT'] == pt]
