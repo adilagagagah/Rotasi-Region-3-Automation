@@ -46,7 +46,8 @@ for kota in list_kota:
 
             min_stock, min_sales, min_dos = min_dos_article_data[['Stock', 'Sales 30 days', 'DOS 30 days']].values[0]
 
-            rotation_df['Cleaned Article'] = rotation_df['Article code no color'].str.replace('[ /]', '', regex=True)
+            rotation_df = rotation_df.copy()
+            rotation_df.loc[:, 'Cleaned Article'] = rotation_df['Article code no color'].str.replace('[ /]', '', regex=True)
             cleaned_article = article.replace(' ', '').replace('/', '')
 
             # Data dari rotation_df untuk produk yang cocok tanpa spasi dan slash
@@ -104,10 +105,11 @@ for kota in list_kota:
 
     ear_df.append(result_df)
 
+ear_df = [df.dropna(how='all', axis=1) for df in ear_df] 
 result_df = pd.concat(ear_df, ignore_index=True)
 result_df = result_df.sort_values(by=['KOTA', 'STORE TUJUAN', 'ARTICLE'], ascending=[True, True, True])
 
-output_file = "Rotasi EAR.xlsx"
+output_file = "Rotasi EAR-1.xlsx"
 result_df.to_excel(output_file, index=False)
 
-print(result_df.columns)
+# print(result_df.columns)

@@ -13,12 +13,13 @@ df = df[["KOTA", "TSH", "SITE CODE", "PT", "STORE NAME","Article code no color",
 df[['Sales 30 days', 'DOS 30 days']] = df[['Sales 30 days','DOS 30 days']].map(lambda x: np.nan if x < 0 else x)
 dcm_df = []
 
-result_rows = []
 pt = 'DCM'
 df = df[df['PT'] == pt]
 list_tsh = sorted(df["TSH"].unique())
 
 for tsh in list_tsh:
+    result_rows = []
+
     min_dos_df = df[
         (df['TSH'] == tsh) & 
         (df['DOS 30 days'] <= 15)
@@ -101,10 +102,10 @@ for tsh in list_tsh:
     dcm_df.append(result_df)
 
 filtered_dcm_df = [df.dropna(how='all', axis=1) for df in dcm_df] 
-result_df = pd.concat(filtered_dcm_df, ignore_index=True)
+result_df = pd.concat(dcm_df, ignore_index=True)
 result_df = result_df.sort_values(by=['TSH', 'STORE TUJUAN', 'ARTICLE'], ascending=[True, True, True])
 
-output_file = "Rotasi DCM.xlsx"
+output_file = "rotasi DCM.xlsx"
 result_df.to_excel(output_file, index=False)
 
 print(result_df)
