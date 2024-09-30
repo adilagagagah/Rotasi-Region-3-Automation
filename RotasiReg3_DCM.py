@@ -204,4 +204,4 @@ with pd.ExcelWriter(output_file) as writer:
     result_df.to_excel(writer, sheet_name='ByTSH', index=False)
     result_df_2.to_excel(writer, sheet_name='ByKOTA', index=False)
 
-print(result_df_2)
+# print(result_df_2)
