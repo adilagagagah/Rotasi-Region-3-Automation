@@ -100,7 +100,8 @@ for tsh in list_tsh:
 
     dcm_df.append(result_df)
 
-result_df = pd.concat(dcm_df, ignore_index=True)
+filtered_dcm_df = [df.dropna(how='all', axis=1) for df in dcm_df] 
+result_df = pd.concat(filtered_dcm_df, ignore_index=True)
 result_df = result_df.sort_values(by=['TSH', 'STORE TUJUAN', 'ARTICLE'], ascending=[True, True, True])
 
 output_file = "Rotasi DCM.xlsx"
