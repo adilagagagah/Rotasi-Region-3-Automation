@@ -46,8 +46,11 @@ for kota in list_kota:
 
             min_stock, min_sales, min_dos = min_dos_article_data[['Stock', 'Sales 30 days', 'DOS 30 days']].values[0]
 
-            # Data dari rotation_df untuk produk yang cocok
-            rotation_article_data = rotation_df[rotation_df['Article code no color'] == article]
+            rotation_df['Cleaned Article'] = rotation_df['Article code no color'].str.replace('[ /]', '', regex=True)
+            cleaned_article = article.replace(' ', '').replace('/', '')
+
+            # Data dari rotation_df untuk produk yang cocok tanpa spasi dan slash
+            rotation_article_data = rotation_df[rotation_df['Cleaned Article'] == cleaned_article]
             rotation_article_data = rotation_article_data.sort_values(by=['DOS 30 days', 'Stock'], ascending=[False, False])
 
             for _,first_row in rotation_article_data.iterrows():
