@@ -22,7 +22,7 @@ for kota in list_kota:
     min_dos_df = df[
         (df['PT'] == pt) & 
         (df['KOTA'] == kota) & 
-        (df['DOS 30 days'] <= 15)
+        (df['DOS 30 days'] <= 23)
     ]
 
     min_dos_df = min_dos_df.sort_values(by=['DOS 30 days', 'Sales 30 days'], ascending=[True, False])
@@ -37,7 +37,7 @@ for kota in list_kota:
         rotation_df = df[
             (df['PT'] == pt) &
             (df['KOTA'] == kota) &
-            (df['DOS 30 days'] >= 45) &
+            (df['DOS 30 days'] > 30) &
             (df['Article code no color'].isin(min_dos_code_article))
         ]
 
