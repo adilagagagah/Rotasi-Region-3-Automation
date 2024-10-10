@@ -203,7 +203,7 @@ filtered_ear_df = [df.dropna(how='all', axis=1) for df in ear_df_2]
 result_df_2 = pd.concat(filtered_ear_df, ignore_index=True)
 result_df_2 = result_df_2.sort_values(by=['KOTA', 'STORE TUJUAN', 'ARTICLE'], ascending=[True, True, True])
 
-output_file = "rotasi ERA.xlsx"
+output_file = "rotasi EAR.xlsx"
 with pd.ExcelWriter(output_file) as writer:
     result_df.to_excel(writer, sheet_name='ByTSH', index=False)
     result_df_2.to_excel(writer, sheet_name='ByKOTA', index=False)
