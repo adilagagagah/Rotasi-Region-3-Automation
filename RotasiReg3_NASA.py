@@ -14,13 +14,13 @@ df[['Sales 30 days', 'DOS 30 days']] = df[['Sales 30 days','DOS 30 days']].map(l
 nasa_df = []
 nasa_df_2 = []
 
-jumlah_baris_kosong = df['Article code no color'].isnull().sum()
-print(f"Jumlah baris yang kolom 'Article'-nya NaN: {jumlah_baris_kosong}")
-df = df.dropna(subset=['Article code no color'])
-
 pt = 'NASA'
 df = df[df['PT'] == pt]
 list_tsh = sorted(df["TSH"].unique())
+
+jumlah_baris_kosong = df['Article code no color'].isnull().sum()
+print(f"NASA : Jumlah baris yang kolom 'Article'-nya NaN: {jumlah_baris_kosong}")
+df = df.dropna(subset=['Article code no color'])
 
 toko_per_kota = df.groupby('KOTA')['STORE NAME'].nunique()
 toko_per_kota_filtered = toko_per_kota[toko_per_kota >= 5].index
