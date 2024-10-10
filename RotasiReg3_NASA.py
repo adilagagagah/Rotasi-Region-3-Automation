@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-file_name = "Data Stock 20 Sep 2024.xlsx"
+file_name = "Data Stock 9 Oct 2024.xlsx"
 file_path = f"../ROTASI REGION 3/{file_name}"
 master_path = "../ROTASI REGION 3/MASTER REGION STO_NEXT VERSION (62).xlsx"
 df_origin = pd.read_excel(file_path, sheet_name="dos by store-brand type & area")
@@ -13,6 +13,10 @@ df = df[["KOTA", "TSH", "SITE CODE", "PT", "STORE NAME","Article code no color",
 df[['Sales 30 days', 'DOS 30 days']] = df[['Sales 30 days','DOS 30 days']].map(lambda x: np.nan if x < 0 else x)
 nasa_df = []
 nasa_df_2 = []
+
+jumlah_baris_kosong = df['Article code no color'].isnull().sum()
+print(f"Jumlah baris yang kolom 'Article'-nya NaN: {jumlah_baris_kosong}")
+df = df.dropna(subset=['Article code no color'])
 
 pt = 'NASA'
 df = df[df['PT'] == pt]
@@ -27,7 +31,7 @@ for tsh in list_tsh:
 
     min_dos_df = df[
         (df['TSH'] == tsh) & 
-        (df['DOS 30 days'] <= 15)
+        (df['DOS 30 days'] <= 23)
     ]
 
     min_dos_df = min_dos_df.sort_values(by=['DOS 30 days', 'Sales 30 days'], ascending=[True, False])
@@ -41,7 +45,7 @@ for tsh in list_tsh:
 
         rotation_df = df[
             (df['TSH'] == tsh) & 
-            (df['DOS 30 days'] >= 45) &
+            (df['DOS 30 days'] >= 30) &
             (df['Article code no color'].isin(min_dos_code_article))
         ]
 
@@ -49,7 +53,7 @@ for tsh in list_tsh:
             min_dos_article_data = min_dos_code_df[min_dos_code_df['Article code no color'] == article]
 
             min_stock, min_sales, min_dos = min_dos_article_data[['Stock', 'Sales 30 days', 'DOS 30 days']].values[0]
-
+            
             rotation_df = rotation_df.copy()
             rotation_df.loc[:, 'Cleaned Article'] = rotation_df['Article code no color'].str.replace('[ /]', '', regex=True)
             cleaned_article = article.replace(' ', '').replace('/', '')

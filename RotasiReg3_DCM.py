@@ -14,6 +14,10 @@ df[['Sales 30 days', 'DOS 30 days']] = df[['Sales 30 days','DOS 30 days']].map(l
 dcm_df = []
 dcm_df_2 = []
 
+jumlah_baris_kosong = df['Article code no color'].isnull().sum()
+print(f"Jumlah baris yang kolom 'Article'-nya NaN: {jumlah_baris_kosong}")
+df = df.dropna(subset=['Article code no color'])
+
 pt = 'DCM'
 df = df[df['PT'] == pt]
 list_tsh = sorted(df["TSH"].unique())
@@ -27,7 +31,7 @@ for tsh in list_tsh:
 
     min_dos_df = df[
         (df['TSH'] == tsh) & 
-        (df['DOS 30 days'] <= 15)
+        (df['DOS 30 days'] <= 23)
     ]
 
     min_dos_df = min_dos_df.sort_values(by=['DOS 30 days', 'Sales 30 days'], ascending=[True, False])
@@ -41,7 +45,7 @@ for tsh in list_tsh:
 
         rotation_df = df[
             (df['TSH'] == tsh) & 
-            (df['DOS 30 days'] >= 45) &
+            (df['DOS 30 days'] >= 30) &
             (df['Article code no color'].isin(min_dos_code_article))
         ]
 
