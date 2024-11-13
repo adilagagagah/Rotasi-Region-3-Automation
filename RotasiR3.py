@@ -220,6 +220,15 @@ def add_dos_information(df_asal, df_asal_updated, df_tujuan, df_tujuan_updated, 
 
     return merged_data
 
+def adjust_columns(rotasi):
+    rotasi = rotasi.drop(columns=['Stock Akhir', 'Sales Akhir', 'TOTAL ASAL', 'TOTAL TUJUAN', 'Stock Akhir Tujuan', 'Sales Akhir Tujuan'])
+    rotasi = rotasi[[
+        f"{category_col_name}", "STORE ASAL", "ARTICLE", "Stock", "Sales", "Dos", "BARANG TEROTASI", "Dos Akhir", 
+        "STORE TUJUAN", "Stock Tujuan", "Sales Tujuan", "Dos Tujuan", "Dos Akhir Tujuan"
+    ]]
+    
+    return rotasi
+    
 def rotate_by(df_pt, category_list, pt, category_col_name):
     # category bisa by kota ataupun by tsh
     rotasi = pd.DataFrame(columns=[
@@ -242,8 +251,9 @@ def rotate_by(df_pt, category_list, pt, category_col_name):
 
                 rotasi = pd.concat([rotasi, log_rotasi], ignore_index=True)
 
-    # matikan jika memerlukan data total asal dan total tujuan
-    rotasi = rotasi.drop(columns=['TOTAL ASAL', 'TOTAL TUJUAN'])
+    # ubah fungsi dibawah untuk menyesuaikan nama kolom
+    rotasi = adjust_columns(rotasi)  
+      
     return rotasi
 
 def merge_cells(worksheet, result_df, start_row, merge_format):
@@ -267,9 +277,7 @@ def merge_cells(worksheet, result_df, start_row, merge_format):
             worksheet.merge_range(i, 3, i + n_dummy_list_eksekusi - 1, 3, result_df['Stock'].iloc[base_index], merge_format)
             worksheet.merge_range(i, 4, i + n_dummy_list_eksekusi - 1, 4, result_df['Sales'].iloc[base_index], merge_format)
             worksheet.merge_range(i, 5, i + n_dummy_list_eksekusi - 1, 5, result_df['Dos'].iloc[base_index], merge_format)
-            worksheet.merge_range(i, 6, i + n_dummy_list_eksekusi - 1, 6, result_df['Stock Akhir'].iloc[base_index], merge_format)
-            worksheet.merge_range(i, 7, i + n_dummy_list_eksekusi - 1, 7, result_df['Sales Akhir'].iloc[base_index], merge_format)
-            worksheet.merge_range(i, 8, i + n_dummy_list_eksekusi - 1, 8, result_df['Dos Akhir'].iloc[base_index], merge_format)
+            worksheet.merge_range(i, 7, i + n_dummy_list_eksekusi - 1, 7, result_df['Dos Akhir'].iloc[base_index], merge_format)
 
             indeks_dummy_list = [indeks_dummy_list[-1]]
             dummy_list = [dummy_list[-1]]
@@ -313,6 +321,14 @@ with pd.ExcelWriter(f'RotasiR3 {output_file}.xlsx', engine='xlsxwriter') as writ
             
             merge_format = workbook.add_format({'valign': 'vcenter',})
             merge_cells(worksheet, rotasi, 1, merge_format)
+
+            # rename column in excel
+            rotasi.rename(columns={
+                "Dos": "DoS", "BARANG TEROTASI": "Rotasi", "Dos Akhir": "DoS After Rotasi", "Stock Tujuan": "Stock", 
+                "Sales Tujuan": "Sales", "Dos Tujuan": "DoS", "Dos Akhir Tujuan": "DoS After Rotasi"
+            }, inplace=True)
+
+            worksheet.write_row(0, 0, rotasi.columns)
 
 #############################################
 # PROBLEM : TERDAPAT ARTICLE CODE NO COLOR YANG DUPLIKAT UNTUK SATU TOKO DI SATU KOTA
