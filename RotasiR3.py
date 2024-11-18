@@ -2,7 +2,9 @@ import numpy as np
 import pandas as pd
 import math
 from tqdm import tqdm
+from datetime import datetime
 
+start_time = datetime.now()
 def custom_round(n):
     return math.ceil(n) if n % 1 >= 0.5 else math.floor(n)
 
@@ -329,6 +331,13 @@ with pd.ExcelWriter(f'RotasiR3 {output_file}.xlsx', engine='xlsxwriter') as writ
             }, inplace=True)
 
             worksheet.write_row(0, 0, rotasi.columns)
+
+end_time = datetime.now()
+execution_time = end_time - start_time
+execution_time = execution_time.total_seconds()
+menit = int(execution_time // 60)
+detik = int(execution_time % 60)
+print(f"Kode dieksekusi selama: {menit} menit {detik} detik")
 
 #############################################
 # PROBLEM : TERDAPAT ARTICLE CODE NO COLOR YANG DUPLIKAT UNTUK SATU TOKO DI SATU KOTA
