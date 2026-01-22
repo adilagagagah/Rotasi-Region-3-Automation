@@ -289,8 +289,8 @@ def merge_cells(worksheet, result_df, start_row, merge_format):
 # LOAD DATA
 file_name = "Data Stock 9 Oct 2024.xlsx"
 output_file = file_name[11:-5]
-file_path = f"../Data/{file_name}"
-master_path = "../Data/MASTER REGION STO_NEXT VERSION (62).xlsx"
+file_path = f"Data/{file_name}"
+master_path = "Data/MASTER REGION STO_NEXT VERSION (62).xlsx"
 df_origin = pd.read_excel(file_path, sheet_name="dos by store-brand type & area")
 df_master = pd.read_excel(master_path, sheet_name="REGION 3", header=1)
 df_master_selected = df_master[['SITE CODE', 'PT']]
@@ -301,7 +301,7 @@ df[['Sales 30 days', 'DOS 30 days']] = df[['Sales 30 days','DOS 30 days']].clip(
 
 #############################################
 # KODE UTAMA
-with pd.ExcelWriter(f'../Output/RotasiR3 {output_file}.xlsx', engine='xlsxwriter') as writer:
+with pd.ExcelWriter(f'Output/RotasiR3 {output_file}.xlsx', engine='xlsxwriter') as writer:
     for pt in tqdm(['EAR', 'DCM', 'NASA'], desc='Processing PT'):
         for category_col_name in ['KOTA', 'TSH']:
             df_pt = df[df['PT'] == pt]
